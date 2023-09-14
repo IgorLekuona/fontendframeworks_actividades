@@ -1,0 +1,47 @@
+.card {
+    min-width:350px;
+    max-width: 400px;
+    width: 50%;
+    border: 2px outset red;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-title {
+    width: 100%;
+    padding: 1rem;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-title > h1, h4 {
+    margin: 0;
+}
+
+.card-image {
+    max-width: 300px;
+}
+
+.ability {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.types {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.like-btn:hover {
+    border-color: red;
+    color: red;
+    background-color: white;
+}
