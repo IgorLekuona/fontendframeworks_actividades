@@ -1,5 +1,5 @@
-import { Fragment, useEffect, useState, useCallback } from "react";
-import { Card } from "react-bootstrap";
+import { Fragment, useEffect, useState } from "react";
+import { Button, Card } from "react-bootstrap";
 
 import "./styles.css";
 const API_URL = "https://pokeapi.co/api/v2/pokemon/";
@@ -8,6 +8,7 @@ export const Post = ({pokemon}) => {
 
     const [pokeData, setPokeData] = useState({});
     const [ability, setAbility] = useState("");
+    const [likes, setLikes] = useState(1000);
 
     useEffect(() => {
         fetchPoke(pokemon);
@@ -33,17 +34,10 @@ export const Post = ({pokemon}) => {
         return cap+word.slice(1);
     }
 
-    const handleIconCompleted = useCallback(
-        (iconName) => console.log(`${iconName} successfully loaded`),
-        []
-      );
-    
-    const handleIconError = useCallback((err) => console.error(err.message), []);
-
     return (
         <Card className="card">
             <Card.Title className="card-title bg-danger">
-                <h1>{pokemon}</h1>
+                <h1>{firstLetterToUppercase(pokemon)}</h1>
                 <h4>Pokedex ID: {pokeData.id && String(pokeData.id).padStart(3, '0')}</h4>
             </Card.Title>
             {pokeData ? 
@@ -56,11 +50,11 @@ export const Post = ({pokemon}) => {
                         </div>
                         <div className="types">
                             <span>
-                                <button type="button" className="btn btn-danger like-btn">
+                                <button type="button" className="btn btn-danger like-btn" onClick={() => setLikes(likes+1)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                                     </svg>
-                                </button> 1000 likes</span>
+                                </button> {likes} likes</span>
                             {pokeData.types && firstLetterToUppercase(pokeData.types[0].type.name)}{pokeData.types && pokeData.types[1] ? " - " + firstLetterToUppercase(pokeData.types[1].type.name) : null}
                         </div>
                     </Card.Body>

@@ -1,6 +1,9 @@
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Container, Nav } from "react-bootstrap";
 
-export const NavigationBar = () => {
+import pfp_pic from "../../images/pfp_ash.jpg";
+import"./styles.css";
+
+export const NavigationBar = ({navbarState, openHandler, closeHandler}) => {
 
     const logo = (
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-award" viewBox="0 0 16 16">
@@ -12,8 +15,15 @@ export const NavigationBar = () => {
     return (
         <Navbar expand="lg" className="bg-danger" style={{width: "100vw"}}>
             <Container>
-                <Navbar.Brand href="" className="navbar-brand" style={{color: "white", display: "flex", flexDirection: "row"}}>{logo} <h3>Poke-team</h3></Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Brand href="/" className="navbar-brand" style={{color: "white", display: "flex", flexDirection: "row"}}>{logo} <h3>Poke-team</h3></Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => {navbarState ? closeHandler() : openHandler()}}/>
+                <Navbar.Collapse id="basic-navbar-nav" >
+                    <Nav className="me-auto nav-collapse">
+                        <img src={pfp_pic} alt="Ash Ketchum Profile Picture" className="pfp-img"/>
+                        <h5>@ash_ketchum</h5>
+                        <p>I wanna be the very best, like no one ever was. To catch them is my real test, to train them is my cause.</p>
+                    </Nav>
+                </Navbar.Collapse>
             </Container>
         </Navbar>
     )
