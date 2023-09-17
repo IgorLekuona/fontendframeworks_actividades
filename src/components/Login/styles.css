@@ -1,0 +1,25 @@
+.login-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 400px;
+    border: 1px ridge #04423d;
+    border-radius: 20px;
+    background-color: white;
+    color: #04423d;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 10rem;
+}
+
+.logo-box {
+    width: 100%;
+    margin-top: 2rem;
+}

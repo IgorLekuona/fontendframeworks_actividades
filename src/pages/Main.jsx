@@ -9,6 +9,9 @@ import "./styles.css";
 
 import post_img from "../images/post_img.jpg";
 import pfp_img from "../images/pfp_img.jpg";
+import { Login } from "../components/Login";
+
+const tokenSplit = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
 
 export const Main = () => {
 
@@ -19,6 +22,11 @@ export const Main = () => {
     const [pageLoaded, setPageLoaded] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [query, setQuery] = useState("");
+    const [logged, setLogged] = useState(() => {
+        let saved = localStorage.getItem("userToken");
+        let tokenValue = JSON.parse(saved) || "";
+        return tokenValue.includes(tokenSplit);
+    });
 
     const postArray = [
         {
@@ -57,6 +65,12 @@ export const Main = () => {
         bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
     }
 
+    function handleLoginComplete () {
+        let tk = JSON.parse(localStorage.getItem("userToken"));
+        if (tk.includes(tokenSplit)) setLogged(true);
+        setPosts([]);
+    }
+
     //Check page load
     useEffect(() => {
         const onPageLoad = () => {
@@ -77,7 +91,7 @@ export const Main = () => {
     useEffect(() => {
         const timeOutId = setTimeout(() => setPosts(postArray), 3000);
         return () => {clearTimeout(timeOutId);}
-    }, [pageLoaded]);
+    }, [pageLoaded, logged]);
 
     //Search bar change handler
     function handleSearchChange(e) {
@@ -100,8 +114,8 @@ export const Main = () => {
         setProfileOpen(!profileOpen);
     };
 
-    return (
-        <div className="page-container">
+    const mainPage = (
+        <div className="main-container">
             <NavigationBar onLogoClick={handleLogoClick} onProfileClick={handleProfileClick}/>
             {!profileOpen ? 
                 posts.length !== 0 ?
@@ -115,5 +129,19 @@ export const Main = () => {
                 <Profile avatar={profileContent.img} username={profileContent.user} bio={profileContent.bio} />
             }       
         </div>
-    )
+    );
+
+    const loginPage = (
+        <Login onLoginComplete={handleLoginComplete}/>
+    );
+
+    return (
+        <>
+            {logged ? 
+                mainPage
+            :
+                loginPage
+            }
+        </>
+    );
 }
