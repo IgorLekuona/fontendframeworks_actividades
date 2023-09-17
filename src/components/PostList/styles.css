@@ -1,6 +1,7 @@
 .postlist-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
     margin-bottom: 5rem;
     overflow-y: auto;

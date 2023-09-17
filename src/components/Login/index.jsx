@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { LoginForm } from "./LoginForm";
@@ -6,12 +7,13 @@ import "./styles.css";
 
 const API_URL = "https://three-points.herokuapp.com/api/login";
 
-export const Login = ({onLoginComplete}) => {
+export const Login = () => {
     
     const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     const appLogo = (
-        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-lightning-charge-fill" viewBox="0 0 16 16">
+        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" className="bi bi-lightning-charge-fill" viewBox="0 0 16 16">
             <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
         </svg>
     );
@@ -19,7 +21,6 @@ export const Login = ({onLoginComplete}) => {
     async function handleLogin (user, pw) {
         let headersList = {
             "Accept": "*/*",
-            // "User-Agent": "Thunder Client (https://www.thunderclient.com)",
             "Content-Type": "application/json" 
         }
         
@@ -37,7 +38,7 @@ export const Login = ({onLoginComplete}) => {
             if (response.status === 200) {
                 localStorage.setItem("userToken", JSON.stringify(response.data.token));
                 setError(false);
-                onLoginComplete();
+                navigate("/");
             } else setError(true);
         })
         .catch((error) => {

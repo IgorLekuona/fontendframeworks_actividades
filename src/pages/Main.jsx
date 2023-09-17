@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import { NavigationBar } from "../components/NavigationBar";
 import { SearchBar } from "../components/SearchBar";
 import { PostList } from "../components/PostList";
-import { Profile } from "../components/Profile";
 import { Loading } from "../components/Loading";
 import "./styles.css";
 
 import post_img from "../images/post_img.jpg";
-import pfp_img from "../images/pfp_img.jpg";
-import { Login } from "../components/Login";
 
 const tokenSplit = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
 
@@ -20,13 +19,9 @@ export const Main = () => {
     const [section, setSection] = useState("");
 
     const [pageLoaded, setPageLoaded] = useState(false);
-    const [profileOpen, setProfileOpen] = useState(false);
     const [query, setQuery] = useState("");
-    const [logged, setLogged] = useState(() => {
-        let saved = localStorage.getItem("userToken");
-        let tokenValue = JSON.parse(saved) || "";
-        return tokenValue.includes(tokenSplit);
-    });
+
+    const navigate = useNavigate();
 
     const postArray = [
         {
@@ -59,16 +54,33 @@ export const Main = () => {
         },
     ];
 
-    const profileContent = {
-        img: pfp_img,
-        user: "@pepito_14",
-        bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    async function loadPosts (bearer) {
+        let headersList = {
+            "Accept": "*/*",
+            "Authorization": `Bearer ${bearer}`
+        }
+        
+        let reqOptions = {
+            url: "https://three-points.herokuapp.com/api/posts",
+            method: "GET",
+            headers: headersList,
+        }
+           
+        await axios.request(reqOptions)
+        .then(response => {
+            if (response.status === 200) {
+                setPosts(response.data);
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            if (error.response.status === 401) exit();
+        })
     }
 
-    function handleLoginComplete () {
-        let tk = JSON.parse(localStorage.getItem("userToken"));
-        if (tk.includes(tokenSplit)) setLogged(true);
-        setPosts([]);
+    function loadAllData () {
+        let bearer = JSON.parse(localStorage.getItem("userToken"));
+        loadPosts(bearer);
     }
 
     //Check page load
@@ -76,7 +88,13 @@ export const Main = () => {
         const onPageLoad = () => {
             setPageLoaded(true);
         };
-    
+
+        //Check if logged, else redirect to /login
+        let saved = localStorage.getItem("userToken");
+        let tokenValue = JSON.parse(saved) || "";
+        if (!tokenValue.includes(tokenSplit)) {
+            navigate("/login");
+        }
         // Check if the page has already loaded
         if (document.readyState === 'complete') {
             onPageLoad();
@@ -89,9 +107,9 @@ export const Main = () => {
     
     //Delay to page load
     useEffect(() => {
-        const timeOutId = setTimeout(() => setPosts(postArray), 3000);
+        const timeOutId = setTimeout(() => loadAllData(), 3000);
         return () => {clearTimeout(timeOutId);}
-    }, [pageLoaded, logged]);
+    }, [pageLoaded]);
 
     //Search bar change handler
     function handleSearchChange(e) {
@@ -106,42 +124,35 @@ export const Main = () => {
 
     //Logo click handler
     function handleLogoClick () {
-        window.location.reload();
+        navigate("/");
     };
 
     //Profile click handler
     function handleProfileClick () {
-        setProfileOpen(!profileOpen);
+        navigate("/profile");
     };
+
+    //Method to clear localStorage and redirect to /login
+    function exit () {
+        localStorage.clear();
+        navigate("/login")
+    }
 
     const mainPage = (
         <div className="main-container">
             <NavigationBar onLogoClick={handleLogoClick} onProfileClick={handleProfileClick}/>
-            {!profileOpen ? 
-                posts.length !== 0 ?
-                        <>
-                            <SearchBar value={search} onSearch={handleSearchChange}/>
-                            <PostList posts={query === "" ? posts : posts.filter((post) => post.text.includes(query))} />
-                        </>
-                    :
-                        <Loading />  
+            {posts.length !== 0 ?
+                <>
+                    <SearchBar value={search} onSearch={handleSearchChange}/>
+                    <PostList posts={query === "" ? posts : posts.filter((post) => post.text.includes(query))} />
+                </>
             :
-                <Profile avatar={profileContent.img} username={profileContent.user} bio={profileContent.bio} />
+                <Loading />  
             }       
         </div>
     );
 
-    const loginPage = (
-        <Login onLoginComplete={handleLoginComplete}/>
-    );
-
     return (
-        <>
-            {logged ? 
-                mainPage
-            :
-                loginPage
-            }
-        </>
+        mainPage
     );
 }
